@@ -3,30 +3,48 @@ import json
 import matplotlib.pyplot as plt
 import numpy as np
 
-def get_repos(username):
-  res = requests.get('https://api.github.com/users/' + username + '/repos')
-  return res.json()
+# def get_repos(username):
+#   res = requests.get('https://api.github.com/users/' + username + '/repos')
+#   return res.json()
 
 
 
-def project_sum(username):
-  data = get_repos(username)
-  total_data_size = 0
+# def project_sum(username):
+#   data = get_repos(username)
+#   total_data_size = 0
 
-  for j in data:
-    if j['size']:
-      total_data_size += j['size']
-  return total_data_size
-
-
-data=(json.dumps(get_repos('caseyvtcd'), indent = 5))
-print(project_sum("caseyvtcd"))
+#   for j in data:
+#     if j['size']:
+#       total_data_size += j['size']
+#   return total_data_size
 
 
-data = [project_sum("caseyvtcd")]
-X = np.arange(4)
-fig = plt.figure()
-ax = fig.add_axes([0,0,1,1])
-ax.bar(X + 0.00, data[0], color = 'b', width = 0.25)
+# data=(json.dumps(get_repos('caseyvtcd'), indent = 5))
+# print(project_sum("caseyvtcd"))
 
-plt.show()
+
+# data = [project_sum("caseyvtcd")]
+# X = np.arange(4)
+# fig = plt.figure()
+# ax = fig.add_axes([0,0,1,1])
+# ax.bar(X + 0.00, data[0], color = 'b', width = 0.25)
+
+# plt.show()
+
+from bokeh.plotting import figure, output_file, show
+
+# prepare some data
+x = [1, 2, 3, 4, 5]
+y = [6, 7, 2, 4, 5]
+
+# output to static HTML file
+output_file("lines.html")
+
+# create a new plot with a title and axis labels
+p = figure(title="simple line example", x_axis_label='x', y_axis_label='y')
+
+# add a line renderer with legend and line thickness
+p.line(x, y, legend_label="Temp.", line_width=2)
+
+# show the results
+show(p)
