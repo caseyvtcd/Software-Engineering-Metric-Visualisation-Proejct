@@ -4,29 +4,117 @@ import matplotlib.pyplot as plt
 import numpy as np
 from bokeh.plotting import figure, output_file, show
 
-# prepare some data
-x = [1, 2, 3, 4, 5]
-y = [6, 7, 2, 4, 5]
+from math import pi
 
-# output to static HTML file
-output_file("lines.html")
+import pandas as pd
 
-# create a new plot with a title and axis labels
-p = figure(title="simple line example", x_axis_label='x', y_axis_label='y')
+from bokeh.io import output_file, show
+from bokeh.palettes import Category20c
+from bokeh.transform import cumsum
+from github import Github
 
-# add a line renderer with legend and line thickness
-p.line(x, y, legend_label="Temp.", line_width=2)
+#
+#Language Pie Chart
+#
 
-# show the results
-show(p)
+def takeUserInput():
+    
+    #takes user input, and returns the relevant github repository
 
-output_file('vbar.html')
+	token = "004999ae2dd13b7e33f0d8df51a812873a994612"
+	user = "caseyvtcd"
+	repo_str = "Software-Engineering-Metric-Visualisation-Project"
+	g = Github(token)
+	repo = g.get_repo(f"{user}/{repo_str}")
 
-p = figure(plot_width=400, plot_height=400)
-p.vbar(x=[1, 2, 3], width=0.5, bottom=0,
-       top=[1.2, 2.5, 3.7], color="firebrick")
+	return repo
 
-show(p)
+	# token = input('Please enter a GitHub accesss token: ')
+	# user = input('Please enter the username to display data on: ')
+	# repo_str = input('Please enter the repo you wish to view metrics on: ')
+
+
+def piechart(x):
+
+  output_file("pie.html")
+  
+  data = pd.Series(x).reset_index(name='value').rename(columns={'index':'country'})
+  data['angle'] = data['value']/data['value'].sum() * 2*pi
+  data['color'] = Category20c[len(x)]
+
+  p = figure(plot_height=350, title="Pie Chart", toolbar_location=None,
+            tools="hover", tooltips="@country: @value", x_range=(-0.5, 1.0))
+
+  p.wedge(x=0, y=1, radius=0.4,
+          start_angle=cumsum('angle', include_zero=True), end_angle=cumsum('angle'),
+          line_color="white", fill_color='color', legend_field='country', source=data)
+
+  p.axis.axis_label=None
+  p.axis.visible=False
+  p.grid.grid_line_color = None
+
+  show(p)
+
+
+# piechart()
+
+
+
+
+#
+#Testing PyGithub
+#
+
+from github import Github
+
+# First create a Github instance:
+
+
+# or using an access token
+g = Github("004999ae2dd13b7e33f0d8df51a812873a994612")
+
+# Github Enterprise with custom hostname
+#g = Github(base_url="https://{hostname}/api/v3", login_or_token="access_token")
+
+# Then play with your Github objects:
+#lang = ""
+# for repo in g.get_user().get_repos():
+#        #print(repo.language)
+#        languageData += (repo.get_languages())
+
+repo = g.get_repo("bendunnegyms/github-api")
+lang = repo.get_languages()
+
+print(lang)
+
+piechart(lang)
+#
+#Bokeh Graph Testing
+#
+
+# # prepare some data
+# x = [1, 2, 3, 4, 5]
+# y = [6, 7, 2, 4, 5]
+
+# # output to static HTML file
+# output_file("lines.html")
+
+# # create a new plot with a title and axis labels
+# p = figure(title="simple line example", x_axis_label='x', y_axis_label='y')
+
+# # add a line renderer with legend and line thickness
+# p.line(x, y, legend_label="Temp.", line_width=2)
+
+# # show the results
+# show(p)
+
+# output_file('vbar.html')
+
+# p = figure(plot_width=400, plot_height=400)
+# p.vbar(x=[1, 2, 3], width=0.5, bottom=0,
+#        top=[1.2, 2.5, 3.7], color="firebrick")
+
+# show(p)
 
 
 
