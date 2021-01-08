@@ -17,21 +17,6 @@ from github import Github
 #Language Pie Chart
 #
 
-def takeUserInput():
-    
-    #takes user input, and returns the relevant github repository
-
-	token = "004999ae2dd13b7e33f0d8df51a812873a994612"
-	user = "caseyvtcd"
-	repo_str = "Software-Engineering-Metric-Visualisation-Project"
-	g = Github(token)
-	repo = g.get_repo(f"{user}/{repo_str}")
-
-	return repo
-
-	# token = input('Please enter a GitHub accesss token: ')
-	# user = input('Please enter the username to display data on: ')
-	# repo_str = input('Please enter the repo you wish to view metrics on: ')
 
 
 def piechart(x):
@@ -54,9 +39,6 @@ def piechart(x):
   p.grid.grid_line_color = None
 
   show(p)
-
-
-# piechart()
 
 
 
