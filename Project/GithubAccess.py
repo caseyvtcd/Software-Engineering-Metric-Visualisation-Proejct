@@ -2,93 +2,130 @@ import requests
 import json
 import matplotlib.pyplot as plt
 import numpy as np
+from bokeh.plotting import figure, output_file, show
 
-def get_repos(username):
-  res = requests.get('https://api.github.com/users/' + username + '/repos')
-  return res.json()
+from math import pi
+
+import pandas as pd
+
+from bokeh.io import output_file, show
+from bokeh.palettes import Category20c
+from bokeh.transform import cumsum
+from github import Github
+
+#
+#Language Pie Chart
+#
+
+
+
+def piechart(x):
+
+  output_file("pie.html")
+  
+  data = pd.Series(x).reset_index(name='value').rename(columns={'index':'country'})
+  data['angle'] = data['value']/data['value'].sum() * 2*pi
+  data['color'] = Category20c[len(x)]
+
+  p = figure(plot_height=350, title="Pie Chart", toolbar_location=None,
+            tools="hover", tooltips="@country: @value", x_range=(-0.5, 1.0))
+
+  p.wedge(x=0, y=1, radius=0.4,
+          start_angle=cumsum('angle', include_zero=True), end_angle=cumsum('angle'),
+          line_color="white", fill_color='color', legend_field='country', source=data)
+
+  p.axis.axis_label=None
+  p.axis.visible=False
+  p.grid.grid_line_color = None
+
+  show(p)
+
+
 
 
 #
-#Repository size finder
+#Testing PyGithub
 #
 
-def project_sum(username):
-  data = get_repos(username)
-  total_data_size = 0
+from github import Github
 
-  for j in data:
-    if j['size']:
-      total_data_size += j['size']
-  return total_data_size
+# First create a Github instance:
 
 
-data=(json.dumps(get_repos('caseyvtcd'), indent = 5))
-#print(project_sum("caseyvtcd"))
+# or using an access token
+g = Github("004999ae2dd13b7e33f0d8df51a812873a994612")
 
-data=(json.dumps(get_repos('keaneyjo'), indent = 5))
-#print(project_sum("keaneyjo"))
+# Github Enterprise with custom hostname
+#g = Github(base_url="https://{hostname}/api/v3", login_or_token="access_token")
 
+# Then play with your Github objects:
+#lang = ""
+# for repo in g.get_user().get_repos():
+#        #print(repo.language)
+#        languageData += (repo.get_languages())
 
+repo = g.get_repo("bendunnegyms/github-api")
+lang = repo.get_languages()
+
+print(lang)
+
+piechart(lang)
 #
-# single bar chart
+#Bokeh Graph Testing
 #
+
+# # prepare some data
+# x = [1, 2, 3, 4, 5]
+# y = [6, 7, 2, 4, 5]
+
+# # output to static HTML file
+# output_file("lines.html")
+
+# # create a new plot with a title and axis labels
+# p = figure(title="simple line example", x_axis_label='x', y_axis_label='y')
+
+# # add a line renderer with legend and line thickness
+# p.line(x, y, legend_label="Temp.", line_width=2)
+
+# # show the results
+# show(p)
+
+# output_file('vbar.html')
+
+# p = figure(plot_width=400, plot_height=400)
+# p.vbar(x=[1, 2, 3], width=0.5, bottom=0,
+#        top=[1.2, 2.5, 3.7], color="firebrick")
+
+# show(p)
+
+
+
+
+
+# def get_repos(username):
+#   res = requests.get('https://api.github.com/users/' + username + '/repos')
+#   return res.json()
+
+
+
+# def project_sum(username):
+#   data = get_repos(username)
+#   total_data_size = 0
+
+#   for j in data:
+#     if j['size']:
+#       total_data_size += j['size']
+#   return total_data_size
+
+
+# data=(json.dumps(get_repos('caseyvtcd'), indent = 5))
+# print(project_sum("caseyvtcd"))
+
 
 # data = [project_sum("caseyvtcd")]
-# X = np.arange(2)
+# X = np.arange(4)
 # fig = plt.figure()
 # ax = fig.add_axes([0,0,1,1])
 # ax.bar(X + 0.00, data[0], color = 'b', width = 0.25)
 
-#
-#bar chart 2
-#
-
-# N = 5
-# menMeans = (20, 35, 30, 35, 27)
-# womenMeans = (25, 32, 34, 20, 25)
-# menStd = (2, 3, 4, 1, 2)
-# womenStd = (3, 5, 2, 3, 3)
-# ind = np.arange(N)    # the x locations for the groups
-# width = 0.35       # the width of the bars: can also be len(x) sequence
-
-# p1 = plt.bar(ind, menMeans, width, yerr=menStd)
-# p2 = plt.bar(ind, womenMeans, width,
-#              bottom=menMeans, yerr=womenStd)
-
-# plt.ylabel('Scores')
-# plt.title('Scores by group and gender')
-# plt.xticks(ind, ('G1', 'G2', 'G3', 'G4', 'G5'))
-# plt.yticks(np.arange(0, 81, 10))
-# plt.legend((p1[0], p2[0]), ('Men', 'Women'))
-
-
-#
-#bar chart 3
-#
-
-# Fixing random state for reproducibility
-np.random.seed(19680801)
-
-
-plt.rcdefaults()
-fig, ax = plt.subplots()
-
-# Example data
-people = ('caseyvtcd', 'keaneyjo')
-y_pos = np.arange(len(people))
-#performance = 3 + 10 * np.random.rand(len(people))
-users = [project_sum("caseyvtcd"), project_sum("keaneyjo")]
-error = np.random.rand(len(people))
-
-ax.barh(y_pos, users, xerr=error, align='center')
-ax.set_yticks(y_pos)
-ax.set_yticklabels(people)
-ax.invert_yaxis()  # labels read top-to-bottom
-ax.set_xlabel('Size (kb)')
-ax.set_title('What is the combined size of your repositories?')
-
-#
-#display
-#
-
-plt.show()
+# plt.show()
