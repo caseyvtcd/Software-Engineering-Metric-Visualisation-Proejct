@@ -10,7 +10,6 @@ import pandas as pd
 from bokeh.palettes import Category20c
 from bokeh.transform import cumsum
 from github import Github
-
 from datetime import datetime as dt
 #from bokeh.charts import show
 from bokeh.models import DatetimeTickFormatter
