@@ -13,6 +13,12 @@ from bokeh.palettes import Category20c
 from bokeh.transform import cumsum
 from github import Github
 
+from datetime import datetime as dt
+from bokeh.io import output_file
+#from bokeh.charts import show
+from bokeh.models import DatetimeTickFormatter
+from bokeh.plotting import figure
+
 #
 #Language Pie Chart
 #
@@ -25,7 +31,10 @@ def piechart(x):
   
   data = pd.Series(x).reset_index(name='value').rename(columns={'index':'country'})
   data['angle'] = data['value']/data['value'].sum() * 2*pi
-  data['color'] = Category20c[len(x)]
+  if len(x) > 2:
+    data['color'] = Category20c[len(x)]
+  else:  
+    data['color'] = ('#3182bd', '#6baed6')
 
   p = figure(plot_height=350, title="Pie Chart", toolbar_location=None,
             tools="hover", tooltips="@country: @value", x_range=(-0.5, 1.0))
@@ -41,35 +50,89 @@ def piechart(x):
   show(p)
 
 
+#
+# Commit Graph
+#
+def commitGraph():
+  df = pd.DataFrame(data=[1,2,3],
+                    index=[dt(2015, 1, 1), dt(2015, 1, 2), dt(2015, 1, 3)],
+                    columns=['foo'])
+  p = figure(plot_width=400, plot_height=400)
+  p.line(df.index, df['foo'])
+  p.xaxis.formatter=DatetimeTickFormatter(
+          hours=["%d %B %Y"],
+          days=["%d %B %Y"],
+          months=["%d %B %Y"],
+          years=["%d %B %Y"],
+      )
+  p.xaxis.major_label_orientation = pi/4
+  output_file('myplot.html')
+  show(p)
+
+
 
 
 #
-#Testing PyGithub
+#Main - Using PyGithub
 #
+f = open("token.txt", "r")
+g = Github(f.read())
 
-from github import Github
-
-# First create a Github instance:
-
-
-# or using an access token
-g = Github("004999ae2dd13b7e33f0d8df51a812873a994612")
-
-# Github Enterprise with custom hostname
-#g = Github(base_url="https://{hostname}/api/v3", login_or_token="access_token")
-
-# Then play with your Github objects:
-#lang = ""
-# for repo in g.get_user().get_repos():
-#        #print(repo.language)
-#        languageData += (repo.get_languages())
-
-repo = g.get_repo("bendunnegyms/github-api")
+repo = g.get_repo("caseyvtcd/Software-Engineering-Metric-Visualisation-Project")
 lang = repo.get_languages()
 
-print(lang)
+
+#
+#Commit Extraction
+#
+
+commits = repo.get_commits()
+
+commitDateList = []
+id = []
+commitNo = 0
+
+
+for commit in commits:
+  commitDateList.append(commit.commit.committer.date)
+  #print(commitDateList)
+  id.append(commit.sha)
+  commitNo += 1
+
+
+ #converting data into a form bokeh can use
+ 
+ 
+
+# commitList = []
+# commitDates = []
+# for i in commitDateList:
+# 	if i not in commitDates:
+# 		commitDates.append(i)
+	
+#     #converting data into a form bokeh can use
+
+	# cnt = 0
+
+	# for commit in commits:
+	# 	for i in authors:
+	# 		if commit.author.login == authors[cnt].name:
+	# 			authors[cnt].commits += 1
+	# 		cnt += 1
+	# 	cnt = 0
+
+
+
+#
+#Graph Output
+#
 
 piechart(lang)
+commitGraph()
+
+
+
+
 #
 #Bokeh Graph Testing
 #
