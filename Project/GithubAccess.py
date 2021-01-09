@@ -10,6 +10,7 @@ import pandas as pd
 from bokeh.palettes import Category20c
 from bokeh.transform import cumsum
 from github import Github
+
 from datetime import datetime as dt
 #from bokeh.charts import show
 from bokeh.models import DatetimeTickFormatter
@@ -30,7 +31,9 @@ def display(x, picture, username):
   data['angle'] = data['value']/data['value'].sum() * 2*pi
   if len(x) > 2:
     data['color'] = Category20c[len(x)]
-  else:  
+  elif len(x) > 0:  
+    data['color'] = ('#3182bd')
+  else:
     data['color'] = ('#3182bd', '#6baed6')
 
   s1 = figure(plot_height=300, title="Languages Used", toolbar_location=None,
