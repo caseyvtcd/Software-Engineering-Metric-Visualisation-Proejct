@@ -4,15 +4,13 @@ import json
 import matplotlib.pyplot as plt
 import numpy as np
 from bokeh.plotting import figure, output_file, show
-from bokeh.layouts import row, column
 from math import pi
 import pandas as pd
 from bokeh.palettes import Category20c
 from bokeh.transform import cumsum
 from github import Github
-#from datetime import datetime as dt
 import datetime
-#from bokeh.charts import show
+
 from bokeh.models import DatetimeTickFormatter
 from bokeh.layouts import gridplot
 
@@ -67,7 +65,7 @@ def display(x, picture, username, df):
              x=1, y=1, w=253, h=409, anchor="bottom_left")
   
   #graph = row(s3, s2, s1)
-  grid = gridplot([[s3], [s2,s1]], plot_width=500, plot_height=400)
+  grid = gridplot([[s3, s1], [None, s2]], plot_width=400, plot_height=300)
   show(grid)
 
 
@@ -76,12 +74,16 @@ def display(x, picture, username, df):
 #
 #Main - Using PyGithub
 #
+
 f = open("token.txt", "r")
 g = Github(f.read())
 
-repo = g.get_repo("caseyvtcd/Software-Engineering-Metric-Visualisation-Project")
+u = open("user.txt", "r")
+r = open("repo.txt", "r")
+
+repo = g.get_repo(r.read())
 lang = repo.get_languages()
-user = g.get_user("caseyvtcd")
+user = g.get_user(u.read())
 picture = user.avatar_url
 username = user.login
 
@@ -139,9 +141,13 @@ for commit in commits:
 
 
 
-print(sizeList)
+#print(sizeList)
 #converting data into a form bokeh can use
  
+ 
+#
+# Converting Datetime data to be processed by the graph
+#
  
 # Create a datetime variable for today
 base = datetime.datetime.today()
@@ -163,33 +169,6 @@ df.index = df['datetime']
 df['score'] = score_list
 
 df.resample('D').mean()
- 
-#print(commitDateList)
-
-# commitList = []
-# commitDates = []
-# for i in commitDateList:
-# 	if i not in commitDates: 
-#            commitList.append(commitDates(i, 0))
-#            commitDates.append(i)
-    
-	
-    #converting data into a form bokeh can use
-
-	# cnt = 0
-
-	# for commit in commits:
-	# 	for i in authors:
-	# 		if commit.author.login == authors[cnt].name:
-	# 			authors[cnt].commits += 1
-	# 		cnt += 1
-	# 	cnt = 0
-
-
-class CommitDate:
-    	def __init__(self, date, commitNo):
-		    self.date = date
-		    self.commits = commitNo
 
 
 #
