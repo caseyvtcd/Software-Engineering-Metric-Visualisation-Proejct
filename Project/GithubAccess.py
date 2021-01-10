@@ -1,7 +1,4 @@
 from bokeh.models.tickers import YearsTicker
-import requests
-import json
-import matplotlib.pyplot as plt
 import numpy as np
 from bokeh.plotting import figure, output_file, show
 from math import pi
