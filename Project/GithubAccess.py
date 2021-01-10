@@ -10,7 +10,8 @@ import pandas as pd
 from bokeh.palettes import Category20c
 from bokeh.transform import cumsum
 from github import Github
-from datetime import datetime as dt
+#from datetime import datetime as dt
+import datetime
 #from bokeh.charts import show
 from bokeh.models import DatetimeTickFormatter
 from bokeh.layouts import gridplot
@@ -24,7 +25,7 @@ output_file("layout.html")
 #
 
 
-def display(x, picture, username):
+def display(x, picture, username, df):
   
   data = pd.Series(x).reset_index(name='value').rename(columns={'index':'country'})
   data['angle'] = data['value']/data['value'].sum() * 2*pi
@@ -49,12 +50,10 @@ def display(x, picture, username):
   #
   #Commit Graph
   #
+        
 
-  df = pd.DataFrame(data=[1,2,3],
-                    index=[dt(2015, 1, 1), dt(2015, 1, 2), dt(2015, 1, 3)],
-                    columns=['foo'])
   s2 = figure(plot_width=400, plot_height=400, title="Commit Timeline")
-  s2.line(df.index, df['foo'])
+  s2.line(df.index, df['score'])
   s2.xaxis.formatter=DatetimeTickFormatter(
           hours=["%d %B %Y"],
           days=["%d %B %Y"],
@@ -91,23 +90,77 @@ username = user.login
 #Commit Extraction
 #
 
+
+
+
 commits = repo.get_commits()
 
 commitDateList = []
+sizeList = []
 id = []
 commitNo = 0
-
+i = 0
+j = 0
+tempDate = []
+tempMonth = []
+tempYear = []
+numTemp = 0
 
 for commit in commits:
+  
   commitDateList.append(commit.commit.committer.date)
   #print(commitDateList)
   id.append(commit.sha)
   commitNo += 1
+  
+  if j == 0:
+    sizeList.append(1)
+  
+  day = commit.commit.committer.date.strftime("%d")
+  month = commit.commit.committer.date.strftime("%m")
+  year = commit.commit.committer.date.strftime("%y")
+  
+  if(j > 0):
+        if (day == tempDate, month == tempMonth, year == tempYear):
+              numTemp + 1
+              sizeList[j-numTemp] + 1
+        else:
+              sizeList.append(1)
+  
+  a = commit.commit.committer.date
 
 
- #converting data into a form bokeh can use
+  tempDate = day
+  tempMonth = month
+  tempYear = year
+  j+1
+
+
+
+#converting data into a form bokeh can use
  
  
+# Create a datetime variable for today
+base = datetime.datetime.today()
+# Create a list variable that creates 365 days of rows of datetime values
+date_list = commitDateList
+
+score_list = sizeList
+
+df = pd.DataFrame()
+
+# Create a column from the datetime variable
+df['datetime'] = date_list
+# Convert that column into a datetime datatype
+df['datetime'] = pd.to_datetime(df['datetime'])
+# Set the datetime column as the index
+df.index = df['datetime'] 
+# Create a column from the numeric score variable
+df['score'] = score_list
+
+df.resample('D').mean()
+ 
+#print(commitDateList)
 
 # commitList = []
 # commitDates = []
@@ -139,4 +192,4 @@ class CommitDate:
 #Graph Output
 #
 
-display(lang, picture, username)
+display(lang, picture, username, df)
