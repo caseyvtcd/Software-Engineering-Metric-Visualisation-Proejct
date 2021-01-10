@@ -29,7 +29,7 @@ def display(x, picture, username, df):
   data['angle'] = data['value']/data['value'].sum() * 2*pi
   if len(x) > 2:
     data['color'] = Category20c[len(x)]
-  elif len(x) > 0:  
+  elif (len(x) > 0 and len(x) < 2):  
     data['color'] = ('#3182bd')
   else:
     data['color'] = ('#3182bd', '#6baed6')
@@ -62,10 +62,10 @@ def display(x, picture, username, df):
 
   s3 = figure(title=username, toolbar_location=None, tools="")
   s3.image_url( url=[picture],
-             x=1, y=1, w=253, h=409, anchor="bottom_left")
+             x=1, y=1, w=400, h=400, anchor="bottom_left")
   
   #graph = row(s3, s2, s1)
-  grid = gridplot([[s3, s1], [None, s2]], plot_width=400, plot_height=300)
+  grid = gridplot([[s3, s2], [None, s1]], plot_width=350, plot_height=400)
   show(grid)
 
 
