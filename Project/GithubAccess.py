@@ -67,7 +67,7 @@ def display(x, picture, username, df):
              x=1, y=1, w=253, h=409, anchor="bottom_left")
   
   #graph = row(s3, s2, s1)
-  grid = gridplot([[s3, s1], [s2]], plot_width=500, plot_height=400)
+  grid = gridplot([[s3], [s2,s1]], plot_width=500, plot_height=400)
   show(grid)
 
 
@@ -90,9 +90,6 @@ username = user.login
 #Commit Extraction
 #
 
-
-
-
 commits = repo.get_commits()
 
 commitDateList = []
@@ -107,36 +104,42 @@ tempYear = []
 numTemp = 0
 
 for commit in commits:
+      
+  day = commit.commit.committer.date.strftime("%d")
+  month = commit.commit.committer.date.strftime("%m")
+  year = commit.commit.committer.date.strftime("%y")
   
-  commitDateList.append(commit.commit.committer.date)
+  
+  if (day != tempDate or month != tempMonth or year != tempYear):
+        commitDateList.append(commit.commit.committer.date)
   #print(commitDateList)
   id.append(commit.sha)
   commitNo += 1
   
   if j == 0:
     sizeList.append(1)
-  
-  day = commit.commit.committer.date.strftime("%d")
-  month = commit.commit.committer.date.strftime("%m")
-  year = commit.commit.committer.date.strftime("%y")
+
+  #print (day, tempDate)
+  #print (month, tempMonth)
+  #print (year, tempYear)
   
   if(j > 0):
-        if (day == tempDate, month == tempMonth, year == tempYear):
-              numTemp + 1
-              sizeList[j-numTemp] + 1
+        
+        if (day == tempDate and month and tempMonth and year == tempYear):
+              numTemp= numTemp + 1
+              sizeList[j-numTemp] += 1
         else:
               sizeList.append(1)
-  
-  a = commit.commit.committer.date
 
 
   tempDate = day
   tempMonth = month
   tempYear = year
-  j+1
+  j= j+1
 
 
 
+print(sizeList)
 #converting data into a form bokeh can use
  
  
@@ -146,6 +149,7 @@ base = datetime.datetime.today()
 date_list = commitDateList
 
 score_list = sizeList
+#score_list = list(np.random.randint(low=1, high=1000, size=len(commitDateList)))
 
 df = pd.DataFrame()
 
